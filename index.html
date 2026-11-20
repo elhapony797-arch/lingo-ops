@@ -12,10 +12,13 @@ h1{margin:0;font-size:1.8rem}
 .ar{color:#9fb3c8;margin-top:8px}
 input{width:100%;box-sizing:border-box;padding:14px;border-radius:12px;border:0;font-size:1.1rem;direction:ltr;margin-top:12px}
 button{border:0;border-radius:12px;padding:13px 18px;font-size:1rem;margin:8px 4px 0 0}
-.g{background:#22c55e;color:#000}.b{background:#3b82f6;color:#fff}.o{background:#f59e0b;color:#000}.x{background:#334155;color:#fff}
+.g{background:#22c55e;color:#000}.b{background:#3b82f6;color:#fff}.o{background:#f59e0b;color:#000}.x{background:#334155;color:#fff}.r{background:#ef4444;color:#fff}
 .m{display:block;width:100%;text-align:right;background:#1e2b4a;color:#fff;margin:10px 0 0}
 .lock{opacity:.4}
 #fb{margin-top:12px;font-size:1.05rem}
+.bar{height:12px;background:#0b1220;border-radius:8px;margin-top:6px;overflow:hidden}
+.bar div{height:100%;background:#f59e0b}
+.err{direction:ltr;text-align:left;background:#0b1220;border-radius:10px;padding:10px;margin-top:8px;font-size:.95rem}
 </style>
 </head>
 <body>
@@ -38,10 +41,22 @@ function speak(t){
 }
 function norm(t){ return t.toLowerCase().replace(/[^a-z' ]/g,''); }
 
+function skillOf(s){
+  const w = [].concat(s.all || [], s.any || []).join(' ');
+  if(/where|how much|do you have/.test(w)) return 'طرح الأسئلة (Where / How much / Do you have)';
+  if(/my name|i am|i'm/.test(w)) return 'التعريف بالنفس (I am / My name is)';
+  if(/would like|i want|can i|could i|may i|i need|looking for|i take|i will/.test(w)) return 'الطلب بأدب (I would like / Can I)';
+  if(/thank/.test(w)) return 'عبارات الشكر والمجاملة';
+  if(/tourism|work|business|visit|day|week/.test(w)) return 'التعبير عن الغرض والمدة';
+  return 'المفردات (كلمات الأشياء والأماكن)';
+}
+
 function home(){
   M = null;
   const total = Object.values(passport).reduce((a,b)=>a+b,0);
-  let h = '<div class="card"><h2>🛂 English Passport</h2><p class="ar">النجوم: ' + total + ' | المهمات المكتملة: ' + Object.keys(passport).length + ' / ' + MS.length + '</p></div><div class="card"><h2>اختر مهمتك</h2>';
+  const errs = (load('dna') || []).length;
+  let h = '<div class="card"><h2>🛂 English Passport</h2><p class="ar">النجوم: ' + total + ' | المهمات المكتملة: ' + Object.keys(passport).length + ' / ' + MS.length + '</p>' +
+    '<button class="o" onclick="dnaScreen()">🧬 Language DNA (' + errs + ' خطأ)</button></div><div class="card"><h2>اختر مهمتك</h2>';
   MS.forEach((m, idx) => {
     const open = idx === 0 || passport[MS[idx-1].id] !== undefined;
     const done = passport[m.id];
@@ -49,6 +64,39 @@ function home(){
       (open ? (done !== undefined ? '✅ ' : '▶️ ') : '🔒 ') + m.id + '. ' + m.title + (done !== undefined ? ' (' + done + '⭐)' : '') + '</button>';
   });
   app.innerHTML = h + '</div>';
+}
+
+function dnaScreen(){
+  const dna = load('dna') || [];
+  if(!dna.length){
+    app.innerHTML = '<div class="card"><h2>🧬 Language DNA</h2><p class="ar">لا توجد أخطاء مسجّلة بعد. أكمل بعض المهمات وسنحلل أداءك.</p><button class="x" onclick="home()">رجوع</button></div>';
+    return;
+  }
+  const count = {};
+  dna.forEach(e => {
+    const m = MS.find(x => x.id === e.mission);
+    const s = m && m.steps[e.step];
+    if(!s) return;
+    const k = skillOf(s);
+    count[k] = (count[k] || 0) + 1;
+  });
+  const list = Object.entries(count).sort((a,b) => b[1] - a[1]);
+  const max = list.length ? list[0][1] : 1;
+  let h = '<div class="card"><h2>🧬 Language DNA</h2><p class="ar">إجمالي الأخطاء: ' + dna.length + '</p>';
+  if(list.length) h += '<p>🎯 احتياجك الأول: <b>' + list[0][0] + '</b></p>';
+  h += '</div><div class="card"><h3>المهارات حسب الأخطاء</h3>';
+  list.forEach(([k, n]) => {
+    h += '<div style="margin-top:12px">' + k + ' — ' + n + '<div class="bar"><div style="width:' + Math.round(n / max * 100) + '%"></div></div></div>';
+  });
+  h += '</div><div class="card"><h3>آخر الأخطاء</h3>';
+  dna.slice(-5).reverse().forEach(e => {
+    const m = MS.find(x => x.id === e.mission);
+    const s = m && m.steps[e.step];
+    if(!s) return;
+    h += '<div class="err">❓ ' + s.say + '<br>✍️ ' + (e.answer || '(فارغ)') + '</div>';
+  });
+  h += '</div><button class="x" onclick="home()">رجوع</button><button class="r" onclick="if(confirm(\'مسح كل الأخطاء؟\')){localStorage.removeItem(\'dna\');dnaScreen()}">مسح السجل</button>';
+  app.innerHTML = h;
 }
 
 function begin(idx){
@@ -100,7 +148,7 @@ function finish(){
   passport[M.id] = Math.max(passport[M.id] || 0, stars);
   save('passport', passport);
   const n = (load('dna') || []).length;
-  app.innerHTML = '<div class="card"><h2>🏅 اكتملت المهمة!</h2><p>النجوم: ' + stars + ' / ' + M.steps.length + '</p><p class="ar">أخطاء مسجّلة في Language DNA: ' + n + '</p><button class="g" onclick="home()">القائمة الرئيسية</button></div>';
+  app.innerHTML = '<div class="card"><h2>🏅 اكتملت المهمة!</h2><p>النجوم: ' + stars + ' / ' + M.steps.length + '</p><p class="ar">أخطاء مسجّلة في Language DNA: ' + n + '</p><button class="g" onclick="home()">القائمة الرئيسية</button><button class="o" onclick="dnaScreen()">🧬 حلّل أخطائي</button></div>';
   speak('Mission complete. Well done, agent.');
 }
 
