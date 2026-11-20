@@ -12,7 +12,9 @@ h1{margin:0;font-size:1.8rem}
 .ar{color:#9fb3c8;margin-top:8px}
 input{width:100%;box-sizing:border-box;padding:14px;border-radius:12px;border:0;font-size:1.1rem;direction:ltr;margin-top:12px}
 button{border:0;border-radius:12px;padding:13px 18px;font-size:1rem;margin:8px 4px 0 0}
-.g{background:#22c55e;color:#000}.b{background:#3b82f6;color:#fff}.o{background:#f59e0b;color:#000}
+.g{background:#22c55e;color:#000}.b{background:#3b82f6;color:#fff}.o{background:#f59e0b;color:#000}.x{background:#334155;color:#fff}
+.m{display:block;width:100%;text-align:right;background:#1e2b4a;color:#fff;margin:10px 0 0}
+.lock{opacity:.4}
 #fb{margin-top:12px;font-size:1.05rem}
 </style>
 </head>
@@ -20,19 +22,38 @@ button{border:0;border-radius:12px;padding:13px 18px;font-size:1rem;margin:8px 4
 <h1>Lingo Ops</h1>
 <div id="app"></div>
 <script>
-let M, i = 0, stars = 0;
+let MS = [], M, i = 0, stars = 0;
 const app = document.getElementById('app');
+const load = k => JSON.parse(localStorage.getItem(k) || 'null');
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+let passport = load('passport') || {};
 
 function speak(t){
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(t);
-  u.lang = 'en-US'; u.rate = 0.9;
+  u.lang = 'en-US';
+  u.rate = (M && M.voice === 'female') ? 0.95 : 0.85;
+  u.pitch = (M && M.voice === 'female') ? 1.4 : 0.8;
   speechSynthesis.speak(u);
 }
 function norm(t){ return t.toLowerCase().replace(/[^a-z' ]/g,''); }
 
-function start(){
-  app.innerHTML = '<div class="card"><h2>مهمة 1: ' + M.title + '</h2><p class="ar">تحدّث مع ' + M.agent + ' بالإنجليزية. اكتب ردك أو انطق به.</p><button class="g" onclick="show()">ابدأ المهمة</button></div>';
+function home(){
+  M = null;
+  const total = Object.values(passport).reduce((a,b)=>a+b,0);
+  let h = '<div class="card"><h2>🛂 English Passport</h2><p class="ar">النجوم: ' + total + ' | المهمات المكتملة: ' + Object.keys(passport).length + ' / ' + MS.length + '</p></div><div class="card"><h2>اختر مهمتك</h2>';
+  MS.forEach((m, idx) => {
+    const open = idx === 0 || passport[MS[idx-1].id] !== undefined;
+    const done = passport[m.id];
+    h += '<button class="m ' + (open ? '' : 'lock') + '" ' + (open ? 'onclick="begin(' + idx + ')"' : 'disabled') + '>' +
+      (open ? (done !== undefined ? '✅ ' : '▶️ ') : '🔒 ') + m.id + '. ' + m.title + (done !== undefined ? ' (' + done + '⭐)' : '') + '</button>';
+  });
+  app.innerHTML = h + '</div>';
+}
+
+function begin(idx){
+  M = MS[idx]; i = 0; stars = 0;
+  app.innerHTML = '<div class="card"><h2>مهمة ' + M.id + ': ' + M.title + '</h2><p class="ar">تحدّث مع ' + M.agent + ' بالإنجليزية. اكتب ردك أو انطق به.</p><button class="g" onclick="show()">ابدأ المهمة</button><button class="x" onclick="home()">رجوع</button></div>';
 }
 
 function show(){
@@ -43,6 +64,7 @@ function show(){
   '<input id="ans" placeholder="Type your answer...">' +
   '<button class="b" onclick="listen()">🎤 تحدّث</button>' +
   '<button class="g" onclick="check()">تحقق</button>' +
+  '<button class="x" onclick="home()">خروج</button>' +
   '<div id="fb"></div></div>';
   speak(s.say);
 }
@@ -66,21 +88,23 @@ function check(){
     stars++; fb.textContent = '✅ ممتاز!'; speak('Great job!');
     i++; setTimeout(show, 1800);
   } else {
-    const dna = JSON.parse(localStorage.getItem('dna') || '[]');
+    const dna = load('dna') || [];
     dna.push({mission: M.id, step: i, answer: a, time: Date.now()});
-    localStorage.setItem('dna', JSON.stringify(dna));
+    save('dna', dna);
     fb.textContent = '❌ قريب! جرّب مرة أخرى. تلميح: ' + s.ar;
     speak('Try again.');
   }
 }
 
 function finish(){
-  const n = JSON.parse(localStorage.getItem('dna') || '[]').length;
-  app.innerHTML = '<div class="card"><h2>🏅 اكتملت المهمة!</h2><p>النجوم: ' + stars + ' / ' + M.steps.length + '</p><p class="ar">أخطاء مسجّلة في Language DNA: ' + n + '</p><button class="g" onclick="i=0;stars=0;start()">أعد المهمة</button></div>';
+  passport[M.id] = Math.max(passport[M.id] || 0, stars);
+  save('passport', passport);
+  const n = (load('dna') || []).length;
+  app.innerHTML = '<div class="card"><h2>🏅 اكتملت المهمة!</h2><p>النجوم: ' + stars + ' / ' + M.steps.length + '</p><p class="ar">أخطاء مسجّلة في Language DNA: ' + n + '</p><button class="g" onclick="home()">القائمة الرئيسية</button></div>';
   speak('Mission complete. Well done, agent.');
 }
 
-fetch('missions.json').then(r => r.json()).then(d => { M = d; start(); });
+fetch('missions.json').then(r => r.json()).then(d => { MS = d; home(); });
 </script>
 </body>
 </html>
