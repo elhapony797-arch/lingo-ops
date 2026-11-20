@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Lingo Ops Admin</title>
+<style>
+body{margin:0;background:#0b1220;color:#fff;font-family:sans-serif;padding:20px 14px}
+.card{background:#16213a;border-radius:16px;padding:16px;margin-top:14px}
+h1{margin:0;font-size:1.6rem}
+input,select{width:100%;box-sizing:border-box;padding:13px;border-radius:12px;border:0;font-size:1rem;direction:ltr;margin-top:10px}
+button{border:0;border-radius:12px;padding:12px 16px;font-size:1rem;margin:8px 4px 0 0}
+.g{background:#22c55e;color:#000}.x{background:#334155;color:#fff}.o{background:#f59e0b;color:#000}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
+th,td{padding:8px 4px;text-align:right;border-bottom:1px solid #26365c}
+.n{display:flex;gap:8px;flex-wrap:wrap}
+.stat{flex:1;min-width:90px;background:#0b1220;border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:1.5rem;color:#f59e0b}
+#msg{color:#fca5a5;margin-top:8px}
+</style>
+</head>
+<body>
+<h1>🛡️ لوحة الإدارة</h1>
+<div id="app"></div>
+<script>
+const SB_URL = 'https://cvbztwlbulrqwphmhakn.supabase.co';
+const SB_KEY = 'sb_publishable_qyDfWomase0XdKMBsfdtXQ_jjKu9Ymc';
+const app = document.getElementById('app');
+const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let token = sessionStorage.getItem('tok');
+let G = [], S = [], R = [];
+
+async function api(path, method, body){
+  const r = await fetch(SB_URL + path, {
+    method: method || 'GET',
+    headers: {apikey: SB_KEY, Authorization: 'Bearer ' + (token || SB_KEY), 'Content-Type': 'application/json', Prefer: 'return=representation'},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(r.status === 401){ token = null; sessionStorage.removeItem('tok'); loginScreen(); return null; }
+  return r.ok ? r.json() : null;
+}
+
+function loginScreen(msg){
+  app.innerHTML = '<div class="card"><h2>تسجيل دخول المدير</h2><input id="em" type="email" placeholder="Email"><input id="pw" type="password" placeholder="Password"><button class="g" onclick="login()">دخول</button><div id="msg">' + (msg || '') + '</div></div>';
+}
+async function login(){
+  const r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+    method: 'POST', headers: {apikey: SB_KEY, 'Content-Type': 'application/json'},
+    body: JSON.stringify({email: document.getElementById('em').value.trim(), password: document.getElementById('pw').value})
+  });
+  const d = await r.json();
+  if(!d.access_token) return loginScreen('بيانات الدخول غير صحيحة.');
+  token = d.access_token; sessionStorage.setItem('tok', token);
+  dash();
+}
+function logout(){ token = null; sessionStorage.removeItem('tok'); loginScreen(); }
+
+async function dash(){
+  app.innerHTML = '<div class="card">جارٍ التحميل...</div>';
+  G = await api('/rest/v1/groups?select=*&order=id'); if(!G) return;
+  S = await api('/rest/v1/students?select=*&order=created_at.desc') || [];
+  R = await api('/rest/v1/results?select=*') || [];
+  render();
+}
+
+function render(){
+  const gname = id => (G.find(g => g.id === id) || {}).name || '—';
+  const stat = sid => {
+    const rs = R.filter(r => r.student_id === sid);
+    return {m: new Set(rs.map(r => r.mission_id)).size, st: rs.reduce((a, r) => a + r.stars, 0), er: rs.reduce((a, r) => a + r.mistakes, 0)};
+  };
+  const totalStars = R.reduce((a, r) => a + r.stars, 0);
+  let h = '<div class="card"><div class="n"><div class="stat"><b>' + S.length + '</b>طالب</div><div class="stat"><b>' + G.length + '</b>مجموعة</div><div class="stat"><b>' + R.length + '</b>نتيجة</div><div class="stat"><b>' + totalStars + '</b>نجمة</div></div>' +
+    '<button class="x" onclick="dash()">🔄 تحديث</button><button class="x" onclick="logout()">خروج</button></div>';
+
+  h += '<div class="card"><h3>المجموعات</h3><table><tr><th>المجموعة</th><th>الطلاب</th><th>متوسط النجوم</th></tr>';
+  G.forEach(g => {
+    const st = S.filter(s => s.group_id === g.id);
+    const sum = st.reduce((a, s) => a + stat(s.id).st, 0);
+    h += '<tr><td>' + esc(g.name) + '</td><td>' + st.length + '</td><td>' + (st.length ? (sum / st.length).toFixed(1) : '—') + '</td></tr>';
+  });
+  h += '</table><input id="ng" placeholder="New group name"><button class="g" onclick="addGroup()">➕ إضافة مجموعة</button></div>';
+
+  h += '<div class="card"><h3>الطلاب</h3><table><tr><th>الاسم</th><th>المجموعة</th><th>مهمات</th><th>نجوم</th><th>أخطاء</th></tr>';
+  S.forEach(s => {
+    const t = stat(s.id);
+    h += '<tr><td>' + esc(s.name) + '</td><td>' + esc(gname(s.group_id)) + '</td><td>' + t.m + '</td><td>' + t.st + '</td><td>' + t.er + '</td></tr>';
+  });
+  h += '</table></div>';
+  app.innerHTML = h;
+}
+
+async function addGroup(){
+  const n = document.getElementById('ng').value.trim();
+  if(!n) return;
+  await api('/rest/v1/groups', 'POST', {name: n});
+  dash();
+}
+
+if(token) dash(); else loginScreen();
+</script>
+</body>
+</html>
