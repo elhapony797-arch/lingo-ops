@@ -1,3 +1,4 @@
+if (location.search.includes('reset=1')) { localStorage.clear(); location.replace(location.pathname); }
 const CENTER = 'Lingo Ops Academy';
 const SB_URL = 'https://cvbztwlbulrqwphmhakn.supabase.co';
 const SB_KEY = 'sb_publishable_qyDfWomase0XdKMBsfdtXQ_jjKu9Ymc';
