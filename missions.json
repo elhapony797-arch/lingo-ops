@@ -1,42 +1,52 @@
 [
-  {
-    "id": 1, "title": "The Secret Café", "agent": "Agent Sam", "voice": "male",
-    "steps": [
-      {"say": "Welcome, agent. I am your contact. What is your name?", "ar": "عرّف بنفسك: اسمي ...", "any": ["my name is", "i am", "i'm"]},
-      {"say": "Good. The code word is hidden in this café. Ask the waiter for a coffee.", "ar": "اطلب قهوة من النادل", "all": ["coffee"], "any": ["can i", "i would like", "i want", "could i"]},
-      {"say": "The waiter asks: Anything else? Tell him you want a sandwich.", "ar": "قل له إنك تريد سندويتش", "all": ["sandwich"]}
-    ]
-  },
-  {
-    "id": 2, "title": "Airport Escape", "agent": "Agent Nora", "voice": "female",
-    "steps": [
-      {"say": "Passport control. Where are you from?", "ar": "قل من أين أنت: I am from ...", "any": ["i am from", "i'm from"]},
-      {"say": "What is the purpose of your visit?", "ar": "قل إنك هنا للسياحة أو العمل", "any": ["tourism", "tourist", "work", "business", "visit"]},
-      {"say": "How many days will you stay?", "ar": "قل عدد الأيام: five days", "any": ["day", "days", "week"]}
-    ]
-  },
-  {
-    "id": 3, "title": "The Missing Notebook", "agent": "Agent Sam", "voice": "male",
-    "steps": [
-      {"say": "A notebook is missing from the classroom. Ask your teacher where it is.", "ar": "اسأل: Where is the notebook?", "all": ["where", "notebook"]},
-      {"say": "Maybe it is on the desk. Ask a classmate: Do you have a pen?", "ar": "اسأل زميلك عن قلم", "all": ["pen"], "any": ["do you have", "can i", "may i"]},
-      {"say": "Say thank you to your teacher.", "ar": "اشكر المعلم", "any": ["thank you", "thanks"]}
-    ]
-  },
-  {
-    "id": 4, "title": "Restaurant Code", "agent": "Agent Nora", "voice": "female",
-    "steps": [
-      {"say": "Good evening. A table for how many people?", "ar": "قل: a table for two", "all": ["table"]},
-      {"say": "What would you like to drink?", "ar": "اطلب مشروباً: I would like water", "any": ["i would like", "i want", "can i have"]},
-      {"say": "Here is the menu. Ask for the bill when you finish.", "ar": "اطلب الفاتورة: The bill, please", "all": ["bill"]}
-    ]
-  },
-  {
-    "id": 5, "title": "Shopping Mission", "agent": "Agent Sam", "voice": "male",
-    "steps": [
-      {"say": "Welcome to the shop. Can I help you?", "ar": "قل: I am looking for a jacket", "any": ["looking for", "i want", "i need"]},
-      {"say": "Here it is. Ask about the price.", "ar": "اسأل: How much is it?", "all": ["how much"]},
-      {"say": "It is fifty dollars. Tell him you will take it.", "ar": "قل: I will take it", "any": ["i will take", "i'll take", "i take"]}
-    ]
-  }
+  {"id": 1, "title": "The Secret Café", "agent": "Agent Sam", "voice": "male", "steps": [
+    {"say": "Welcome, agent. I am your contact. What is your name?", "ar": "عرّف بنفسك: اسمي ...", "any": ["my name is", "i am", "i'm"]},
+    {"say": "Good. The code word is hidden in this café. Ask the waiter for a coffee.", "ar": "اطلب قهوة من النادل", "all": ["coffee"], "any": ["can i", "i would like", "i want", "could i"]},
+    {"say": "The waiter asks: Anything else? Tell him you want a sandwich.", "ar": "قل له إنك تريد سندويتش", "all": ["sandwich"]}
+  ]},
+  {"id": 2, "title": "Airport Escape", "agent": "Agent Nora", "voice": "female", "steps": [
+    {"say": "Passport control. Where are you from?", "ar": "قل من أين أنت: I am from ...", "any": ["i am from", "i'm from"]},
+    {"say": "What is the purpose of your visit?", "ar": "قل إنك هنا للسياحة أو العمل", "any": ["tourism", "tourist", "work", "business", "visit"]},
+    {"say": "How many days will you stay?", "ar": "قل عدد الأيام: five days", "any": ["day", "days", "week"]}
+  ]},
+  {"id": 3, "title": "The Missing Notebook", "agent": "Agent Sam", "voice": "male", "steps": [
+    {"say": "A notebook is missing from the classroom. Ask your teacher where it is.", "ar": "اسأل: Where is the notebook?", "all": ["where", "notebook"]},
+    {"say": "Maybe it is on the desk. Ask a classmate: Do you have a pen?", "ar": "اسأل زميلك عن قلم", "all": ["pen"], "any": ["do you have", "can i", "may i"]},
+    {"say": "Say thank you to your teacher.", "ar": "اشكر المعلم", "any": ["thank you", "thanks"]}
+  ]},
+  {"id": 4, "title": "Restaurant Code", "agent": "Agent Nora", "voice": "female", "steps": [
+    {"say": "Good evening. A table for how many people?", "ar": "قل: a table for two", "all": ["table"]},
+    {"say": "What would you like to drink?", "ar": "اطلب مشروباً: I would like water", "any": ["i would like", "i want", "can i have"]},
+    {"say": "Here is the menu. Ask for the bill when you finish.", "ar": "اطلب الفاتورة: The bill, please", "all": ["bill"]}
+  ]},
+  {"id": 5, "title": "Shopping Mission", "agent": "Agent Sam", "voice": "male", "steps": [
+    {"say": "Welcome to the shop. Can I help you?", "ar": "قل: I am looking for a jacket", "any": ["looking for", "i want", "i need"]},
+    {"say": "Here it is. Ask about the price.", "ar": "اسأل: How much is it?", "all": ["how much"]},
+    {"say": "It is fifty dollars. Tell him you will take it.", "ar": "قل: I will take it", "any": ["i will take", "i'll take", "i take"]}
+  ]},
+  {"id": 6, "title": "Lost in the City", "agent": "Agent Nora", "voice": "female", "steps": [
+    {"say": "You look lost, agent. Ask me where the station is.", "ar": "اسأل: Where is the station?", "all": ["where", "station"]},
+    {"say": "Go straight, then turn left. Ask: Is it far?", "ar": "اسأل: Is it far?", "all": ["far"]},
+    {"say": "It is five minutes on foot. Say thank you.", "ar": "اشكرها", "any": ["thank you", "thanks"]}
+  ]},
+  {"id": 7, "title": "Doctor Signal", "agent": "Agent Sam", "voice": "male", "steps": [
+    {"say": "Agent, you look sick. What is the problem?", "ar": "قل: I have a headache", "any": ["i have", "my head", "i feel"]},
+    {"say": "How long have you felt this way?", "ar": "قل: two days", "any": ["day", "days", "week", "hour", "hours"]},
+    {"say": "Take this medicine twice a day. Say thank you, doctor.", "ar": "اشكر الطبيب", "all": ["doctor"], "any": ["thank you", "thanks"]}
+  ]},
+  {"id": 8, "title": "Hotel Infiltration", "agent": "Agent Nora", "voice": "female", "steps": [
+    {"say": "Welcome to the hotel. Do you have a reservation?", "ar": "قل: Yes, I have a reservation", "any": ["reservation", "booked", "booking"]},
+    {"say": "Your name, please?", "ar": "قل: My name is ...", "any": ["my name is", "i am", "i'm"]},
+    {"say": "Room twelve. Ask what time breakfast is.", "ar": "اسأل: What time is breakfast?", "all": ["what time", "breakfast"]}
+  ]},
+  {"id": 9, "title": "The Phone Call", "agent": "Agent Sam", "voice": "male", "steps": [
+    {"say": "Hello? Who is speaking?", "ar": "قل: This is ...", "any": ["this is", "my name is", "i am"]},
+    {"say": "The boss is not here. Ask if you can leave a message.", "ar": "اسأل: Can I leave a message?", "all": ["message"], "any": ["can i", "could i", "may i"]},
+    {"say": "Of course. Tell me your phone number is ready, then say goodbye.", "ar": "قل: Goodbye", "any": ["goodbye", "bye"]}
+  ]},
+  {"id": 10, "title": "Final Briefing", "agent": "Agent Nora", "voice": "female", "steps": [
+    {"say": "Final mission, agent. Introduce yourself and say where you live.", "ar": "قل: My name is ... I live in ...", "all": ["live"], "any": ["my name is", "i am", "i'm"]},
+    {"say": "What do you do every morning?", "ar": "قل: I wake up at seven", "any": ["i wake", "i go", "i eat", "i drink", "i study", "i work"]},
+    {"say": "Tell me one thing you want to learn next.", "ar": "قل: I want to learn ...", "any": ["i want to learn", "i would like to learn", "i want to"]}
+  ]}
 ]
