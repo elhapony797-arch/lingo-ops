@@ -1,0 +1,23 @@
+{
+  "id": 1,
+  "title": "The Secret Café",
+  "agent": "Agent Sam",
+  "steps": [
+    {
+      "say": "Welcome, agent. I am your contact. What is your name?",
+      "ar": "عرّف بنفسك: اسمي ...",
+      "any": ["my name is", "i am", "i'm"]
+    },
+    {
+      "say": "Good. The code word is hidden in this café. Ask the waiter for a coffee.",
+      "ar": "اطلب قهوة من النادل",
+      "all": ["coffee"],
+      "any": ["can i", "i would like", "i want", "could i"]
+    },
+    {
+      "say": "The waiter asks: Anything else? Tell him you want a sandwich.",
+      "ar": "قل له إنك تريد سندويتش",
+      "all": ["sandwich"]
+    }
+  ]
+}
