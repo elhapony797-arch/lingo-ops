@@ -5,15 +5,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lingo Ops</title>
 <style>
-body{margin:0;background:#0b1220;color:#fff;font-family:sans-serif;text-align:center;padding:60px 20px}
-h1{font-size:2.4rem;margin:0}
-p{color:#9fb3c8}
-button{background:#22c55e;border:0;color:#000;font-size:1.1rem;padding:14px 28px;border-radius:12px;margin-top:24px}
+body{margin:0;background:#0b1220;color:#fff;font-family:sans-serif;padding:24px 16px}
+.card{background:#16213a;border-radius:16px;padding:18px;margin-top:16px}
+h1{margin:0;font-size:1.8rem}
+.en{font-size:1.2rem;direction:ltr;text-align:left}
+.ar{color:#9fb3c8;margin-top:8px}
+input{width:100%;box-sizing:border-box;padding:14px;border-radius:12px;border:0;font-size:1.1rem;direction:ltr;margin-top:12px}
+button{border:0;border-radius:12px;padding:13px 18px;font-size:1rem;margin:8px 4px 0 0}
+.g{background:#22c55e;color:#000}.b{background:#3b82f6;color:#fff}.o{background:#f59e0b;color:#000}
+#fb{margin-top:12px;font-size:1.05rem}
 </style>
 </head>
 <body>
 <h1>Lingo Ops</h1>
-<p>مهماتك السرية لتعلّم الإنجليزية</p>
-<button onclick="alert('المهمة 1 قريباً')">ابدأ المهمة</button>
+<div id="app"></div>
+<script>
+let M, i = 0, stars = 0;
+const app = document.getElementById('app');
+
+function speak(t){
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = 'en-US'; u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+function norm(t){ return t.toLowerCase().replace(/[^a-z' ]/g,''); }
+
+function start(){
+  app.innerHTML = '<div class="card"><h2>مهمة 1: ' + M.title + '</h2><p class="ar">تحدّث مع ' + M.agent + ' بالإنجليزية. اكتب ردك أو انطق به.</p><button class="g" onclick="show()">ابدأ المهمة</button></div>';
+}
+
+function show(){
+  if(i >= M.steps.length) return finish();
+  const s = M.steps[i];
+  app.innerHTML = '<div class="card"><div class="en">🕵️ ' + M.agent + ': ' + s.say + '</div><div class="ar">' + s.ar + '</div>' +
+  '<button class="o" onclick="speak(M.steps[i].say)">🔊 استمع</button>' +
+  '<input id="ans" placeholder="Type your answer...">' +
+  '<button class="b" onclick="listen()">🎤 تحدّث</button>' +
+  '<button class="g" onclick="check()">تحقق</button>' +
+  '<div id="fb"></div></div>';
+  speak(s.say);
+}
+
+function listen(){
+  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!R){ document.getElementById('fb').textContent = 'المتصفح لا يدعم الميكروفون، اكتب إجابتك.'; return; }
+  const r = new R(); r.lang = 'en-US';
+  document.getElementById('fb').textContent = '🎤 أسمعك...';
+  r.onresult = e => { document.getElementById('ans').value = e.results[0][0].transcript; check(); };
+  r.onerror = () => { document.getElementById('fb').textContent = 'لم أسمعك، حاول مرة أخرى أو اكتب.'; };
+  r.start();
+}
+
+function check(){
+  const s = M.steps[i];
+  const a = norm(document.getElementById('ans').value);
+  const ok = (!s.all || s.all.every(w => a.includes(w))) && (!s.any || s.any.some(w => a.includes(w)));
+  const fb = document.getElementById('fb');
+  if(ok){
+    stars++; fb.textContent = '✅ ممتاز!'; speak('Great job!');
+    i++; setTimeout(show, 1800);
+  } else {
+    const dna = JSON.parse(localStorage.getItem('dna') || '[]');
+    dna.push({mission: M.id, step: i, answer: a, time: Date.now()});
+    localStorage.setItem('dna', JSON.stringify(dna));
+    fb.textContent = '❌ قريب! جرّب مرة أخرى. تلميح: ' + s.ar;
+    speak('Try again.');
+  }
+}
+
+function finish(){
+  const n = JSON.parse(localStorage.getItem('dna') || '[]').length;
+  app.innerHTML = '<div class="card"><h2>🏅 اكتملت المهمة!</h2><p>النجوم: ' + stars + ' / ' + M.steps.length + '</p><p class="ar">أخطاء مسجّلة في Language DNA: ' + n + '</p><button class="g" onclick="i=0;stars=0;start()">أعد المهمة</button></div>';
+  speak('Mission complete. Well done, agent.');
+}
+
+fetch('missions.json').then(r => r.json()).then(d => { M = d; start(); });
+</script>
 </body>
 </html>
