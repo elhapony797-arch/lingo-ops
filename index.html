@@ -19,16 +19,27 @@ button{border:0;border-radius:12px;padding:13px 18px;font-size:1rem;margin:8px 4
 .bar{height:12px;background:#0b1220;border-radius:8px;margin-top:6px;overflow:hidden}
 .bar div{height:100%;background:#f59e0b}
 .err{direction:ltr;text-align:left;background:#0b1220;border-radius:10px;padding:10px;margin-top:8px;font-size:.95rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.stamp{background:#0b1220;border:2px dashed #475569;border-radius:14px;padding:12px;text-align:center;font-size:.9rem}
+.stamp.on{border:2px solid #f59e0b}
+.stamp .ic{font-size:2rem}
+.cert{direction:ltr;text-align:center;background:#fffbea;color:#3b2a00;border:6px double #b8860b;border-radius:12px;padding:26px 14px;margin-top:16px}
+.cert h2{margin:0;font-size:1.5rem;color:#8a6100}
+.cert .nm{font-size:1.9rem;font-weight:bold;margin:14px 0;border-bottom:2px solid #b8860b;display:inline-block;padding:0 14px}
+.cert p{margin:6px 0}
 </style>
 </head>
 <body>
 <h1>Lingo Ops</h1>
 <div id="app"></div>
 <script>
-let MS = [], M, i = 0, stars = 0;
+const CENTER = 'Lingo Ops Academy'; // غيّر اسم المركز هنا
+
+let MS = [], M, i = 0, stars = 0, missed = new Set();
 const app = document.getElementById('app');
 const load = k => JSON.parse(localStorage.getItem(k) || 'null');
 const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let passport = load('passport') || {};
 
 function speak(t){
@@ -51,12 +62,33 @@ function skillOf(s){
   return 'المفردات (كلمات الأشياء والأماكن)';
 }
 
+function totalStars(){ return Object.values(passport).reduce((a,b)=>a+b,0); }
+function rankOf(n){
+  if(n >= 13) return '🕶️ Master Spy';
+  if(n >= 9) return '⭐ Senior Agent';
+  if(n >= 4) return '🕵️ Agent';
+  return '🎒 Recruit';
+}
+function allDone(){ return MS.length > 0 && MS.every(m => passport[m.id] !== undefined); }
+function stampIcon(n){ return n >= 3 ? '🥇' : n === 2 ? '🏅' : '🎖️'; }
+
+function nameScreen(){
+  app.innerHTML = '<div class="card"><h2>🛂 مرحباً أيها العميل</h2><p class="ar">اكتب اسمك بالإنجليزية ليُطبع على جوازك وشهادتك.</p><input id="nm" placeholder="Your full name"><button class="g" onclick="setName()">حفظ</button></div>';
+}
+function setName(){
+  const v = document.getElementById('nm').value.trim();
+  if(!v) return;
+  save('name', v);
+  home();
+}
+
 function home(){
   M = null;
-  const total = Object.values(passport).reduce((a,b)=>a+b,0);
+  if(!load('name')) return nameScreen();
   const errs = (load('dna') || []).length;
-  let h = '<div class="card"><h2>🛂 English Passport</h2><p class="ar">النجوم: ' + total + ' | المهمات المكتملة: ' + Object.keys(passport).length + ' / ' + MS.length + '</p>' +
-    '<button class="o" onclick="dnaScreen()">🧬 Language DNA (' + errs + ' خطأ)</button></div><div class="card"><h2>اختر مهمتك</h2>';
+  let h = '<div class="card"><h2>🛂 ' + esc(load('name')) + '</h2><p class="ar">الرتبة: ' + rankOf(totalStars()) + '<br>النجوم: ' + totalStars() + ' | المهمات المكتملة: ' + Object.keys(passport).length + ' / ' + MS.length + '</p>' +
+    '<button class="g" onclick="passportScreen()">🛂 جواز السفر</button>' +
+    '<button class="o" onclick="dnaScreen()">🧬 Language DNA (' + errs + ')</button></div><div class="card"><h2>اختر مهمتك</h2>';
   MS.forEach((m, idx) => {
     const open = idx === 0 || passport[MS[idx-1].id] !== undefined;
     const done = passport[m.id];
@@ -64,6 +96,31 @@ function home(){
       (open ? (done !== undefined ? '✅ ' : '▶️ ') : '🔒 ') + m.id + '. ' + m.title + (done !== undefined ? ' (' + done + '⭐)' : '') + '</button>';
   });
   app.innerHTML = h + '</div>';
+}
+
+function passportScreen(){
+  let h = '<div class="card"><h2>🛂 English Passport</h2><p><b>' + esc(load('name')) + '</b></p><p class="ar">الرتبة: ' + rankOf(totalStars()) + ' | النجوم: ' + totalStars() + ' / ' + (MS.length * 3) + '</p></div>' +
+    '<div class="card"><h3>الأختام</h3><div class="grid">';
+  MS.forEach(m => {
+    const n = passport[m.id];
+    h += '<div class="stamp ' + (n !== undefined ? 'on' : '') + '"><div class="ic">' + (n !== undefined ? stampIcon(n) : '🔒') + '</div>' + esc(m.title) + (n !== undefined ? '<br>' + n + '⭐' : '') + '</div>';
+  });
+  h += '</div></div>';
+  if(allDone()) h += '<div class="card"><h3>🎓 أنجزت كل المهمات!</h3><button class="g" onclick="certScreen()">عرض الشهادة</button></div>';
+  else h += '<div class="card"><p class="ar">أكمل كل المهمات لتحصل على الشهادة.</p></div>';
+  h += '<button class="x" onclick="home()">رجوع</button>';
+  app.innerHTML = h;
+}
+
+function certScreen(){
+  let d = load('certDate');
+  if(!d){ d = new Date().toLocaleDateString('en-GB'); save('certDate', d); }
+  app.innerHTML = '<div class="cert"><h2>Certificate of Achievement</h2><p>' + esc(CENTER) + '</p><p>This certifies that</p>' +
+    '<div class="nm">' + esc(load('name')) + '</div>' +
+    '<p>has completed all ' + MS.length + ' Lingo Ops missions</p>' +
+    '<p>Rank: <b>' + rankOf(totalStars()).replace(/^\S+\s/, '') + '</b> | Stars: ' + totalStars() + '/' + (MS.length * 3) + '</p>' +
+    '<p>Date: ' + d + '</p></div>' +
+    '<p class="ar">صوّر الشاشة لحفظ الشهادة أو مشاركتها.</p><button class="x" onclick="passportScreen()">رجوع</button>';
 }
 
 function dnaScreen(){
@@ -93,14 +150,14 @@ function dnaScreen(){
     const m = MS.find(x => x.id === e.mission);
     const s = m && m.steps[e.step];
     if(!s) return;
-    h += '<div class="err">❓ ' + s.say + '<br>✍️ ' + (e.answer || '(فارغ)') + '</div>';
+    h += '<div class="err">❓ ' + esc(s.say) + '<br>✍️ ' + esc(e.answer || '(فارغ)') + '</div>';
   });
   h += '</div><button class="x" onclick="home()">رجوع</button><button class="r" onclick="if(confirm(\'مسح كل الأخطاء؟\')){localStorage.removeItem(\'dna\');dnaScreen()}">مسح السجل</button>';
   app.innerHTML = h;
 }
 
 function begin(idx){
-  M = MS[idx]; i = 0; stars = 0;
+  M = MS[idx]; i = 0; stars = 0; missed = new Set();
   app.innerHTML = '<div class="card"><h2>مهمة ' + M.id + ': ' + M.title + '</h2><p class="ar">تحدّث مع ' + M.agent + ' بالإنجليزية. اكتب ردك أو انطق به.</p><button class="g" onclick="show()">ابدأ المهمة</button><button class="x" onclick="home()">رجوع</button></div>';
 }
 
@@ -133,9 +190,10 @@ function check(){
   const ok = (!s.all || s.all.every(w => a.includes(w))) && (!s.any || s.any.some(w => a.includes(w)));
   const fb = document.getElementById('fb');
   if(ok){
-    stars++; fb.textContent = '✅ ممتاز!'; speak('Great job!');
+    fb.textContent = '✅ ممتاز!'; speak('Great job!');
     i++; setTimeout(show, 1800);
   } else {
+    missed.add(i);
     const dna = load('dna') || [];
     dna.push({mission: M.id, step: i, answer: a, time: Date.now()});
     save('dna', dna);
@@ -145,10 +203,14 @@ function check(){
 }
 
 function finish(){
+  stars = Math.max(1, M.steps.length - missed.size);
   passport[M.id] = Math.max(passport[M.id] || 0, stars);
   save('passport', passport);
   const n = (load('dna') || []).length;
-  app.innerHTML = '<div class="card"><h2>🏅 اكتملت المهمة!</h2><p>النجوم: ' + stars + ' / ' + M.steps.length + '</p><p class="ar">أخطاء مسجّلة في Language DNA: ' + n + '</p><button class="g" onclick="home()">القائمة الرئيسية</button><button class="o" onclick="dnaScreen()">🧬 حلّل أخطائي</button></div>';
+  let h = '<div class="card"><h2>' + stampIcon(stars) + ' اكتملت المهمة!</h2><p>النجوم: ' + stars + ' / ' + M.steps.length + '</p><p class="ar">أخطاء مسجّلة في Language DNA: ' + n + '</p>';
+  if(allDone()) h += '<p>🎓 أنجزت كل المهمات! شهادتك جاهزة.</p><button class="g" onclick="certScreen()">عرض الشهادة</button>';
+  h += '<button class="g" onclick="home()">القائمة الرئيسية</button><button class="o" onclick="dnaScreen()">🧬 حلّل أخطائي</button></div>';
+  app.innerHTML = h;
   speak('Mission complete. Well done, agent.');
 }
 
