@@ -66,12 +66,19 @@ async function dash(){
 
 function render(){
   const gname = id => (G.find(g => g.id === id) || {}).name || '—';
+  const best = {};
+  R.forEach(r => {
+    const k = r.student_id + '_' + r.mission_id;
+    if(!best[k] || r.stars > best[k].stars) best[k] = r;
+  });
+  const B = Object.values(best);
   const stat = sid => {
-    const rs = R.filter(r => r.student_id === sid);
-    return {m: new Set(rs.map(r => r.mission_id)).size, st: rs.reduce((a, r) => a + r.stars, 0), er: rs.reduce((a, r) => a + r.mistakes, 0)};
+    const rs = B.filter(r => r.student_id === sid);
+    const er = R.filter(r => r.student_id === sid).reduce((a, r) => a + r.mistakes, 0);
+    return {m: rs.length, st: rs.reduce((a, r) => a + r.stars, 0), er: er};
   };
-  const totalStars = R.reduce((a, r) => a + r.stars, 0);
-  let h = '<div class="card"><div class="n"><div class="stat"><b>' + S.length + '</b>طالب</div><div class="stat"><b>' + G.length + '</b>مجموعة</div><div class="stat"><b>' + R.length + '</b>نتيجة</div><div class="stat"><b>' + totalStars + '</b>نجمة</div></div>' +
+  const totalStars = B.reduce((a, r) => a + r.stars, 0);
+  let h = '<div class="card"><div class="n"><div class="stat"><b>' + S.length + '</b>طالب</div><div class="stat"><b>' + G.length + '</b>مجموعة</div><div class="stat"><b>' + B.length + '</b>مهمة مكتملة</div><div class="stat"><b>' + totalStars + '</b>نجمة</div></div>' +
     '<button class="x" onclick="dash()">🔄 تحديث</button><button class="x" onclick="logout()">خروج</button></div>';
 
   h += '<div class="card"><h3>المجموعات</h3><table><tr><th>المجموعة</th><th>الطلاب</th><th>متوسط النجوم</th></tr>';
