@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<meta name="google" content="notranslate">
 <title>Lingo Ops Admin</title>
 <style>
 body{margin:0;background:#0b1220;color:#fff;font-family:sans-serif;padding:20px 14px}
@@ -12,11 +13,13 @@ h1{margin:0;font-size:1.6rem}
 input,select{width:100%;box-sizing:border-box;padding:13px;border-radius:12px;border:0;font-size:1rem;direction:ltr;margin-top:10px}
 button{border:0;border-radius:12px;padding:12px 16px;font-size:1rem;margin:8px 4px 0 0}
 .g{background:#22c55e;color:#000}.x{background:#334155;color:#fff}.o{background:#f59e0b;color:#000}
-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
-th,td{padding:8px 4px;text-align:right;border-bottom:1px solid #26365c}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}
+th,td{padding:8px 4px;text-align:right;border-bottom:1px solid #26365c;vertical-align:top}
 .n{display:flex;gap:8px;flex-wrap:wrap}
-.stat{flex:1;min-width:90px;background:#0b1220;border-radius:12px;padding:12px;text-align:center}
+.stat{flex:1;min-width:80px;background:#0b1220;border-radius:12px;padding:12px;text-align:center}
 .stat b{display:block;font-size:1.5rem;color:#f59e0b}
+.need{color:#f59e0b}
+.ans{direction:ltr;text-align:left;color:#9fb3c8}
 #msg{color:#fca5a5;margin-top:8px}
 </style>
 </head>
@@ -29,7 +32,7 @@ const SB_KEY = 'sb_publishable_qyDfWomase0XdKMBsfdtXQ_jjKu9Ymc';
 const app = document.getElementById('app');
 const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let token = sessionStorage.getItem('tok');
-let G = [], S = [], R = [];
+let G = [], S = [], R = [], E = [];
 
 async function api(path, method, body){
   const r = await fetch(SB_URL + path, {
@@ -61,11 +64,22 @@ async function dash(){
   G = await api('/rest/v1/groups?select=*&order=id'); if(!G) return;
   S = await api('/rest/v1/students?select=*&order=created_at.desc') || [];
   R = await api('/rest/v1/results?select=*') || [];
+  E = await api('/rest/v1/mistakes?select=*&order=id.desc&limit=1000') || [];
   render();
 }
 
+function topSkill(list){
+  const c = {};
+  list.forEach(e => { c[e.skill] = (c[e.skill] || 0) + 1; });
+  const a = Object.entries(c).sort((x, y) => y[1] - x[1]);
+  return a.length ? a[0] : null;
+}
+const shortSkill = s => String(s).split(' (')[0];
+const needText = t => t ? '<span class="need">' + esc(shortSkill(t[0])) + '</span> (' + t[1] + ')' : '—';
+
 function render(){
   const gname = id => (G.find(g => g.id === id) || {}).name || '—';
+  const sname = id => (S.find(s => s.id === id) || {}).name || '—';
   const best = {};
   R.forEach(r => {
     const k = r.student_id + '_' + r.mission_id;
@@ -78,23 +92,43 @@ function render(){
     return {m: rs.length, st: rs.reduce((a, r) => a + r.stars, 0), er: er};
   };
   const totalStars = B.reduce((a, r) => a + r.stars, 0);
-  let h = '<div class="card"><div class="n"><div class="stat"><b>' + S.length + '</b>طالب</div><div class="stat"><b>' + G.length + '</b>مجموعة</div><div class="stat"><b>' + B.length + '</b>مهمة مكتملة</div><div class="stat"><b>' + totalStars + '</b>نجمة</div></div>' +
+
+  let h = '<div class="card"><div class="n">' +
+    '<div class="stat"><b>' + S.length + '</b>طالب</div>' +
+    '<div class="stat"><b>' + G.length + '</b>مجموعة</div>' +
+    '<div class="stat"><b>' + B.length + '</b>مهمة مكتملة</div>' +
+    '<div class="stat"><b>' + totalStars + '</b>نجمة</div>' +
+    '<div class="stat"><b>' + E.length + '</b>خطأ مسجّل</div></div>' +
     '<button class="x" onclick="dash()">🔄 تحديث</button><button class="x" onclick="logout()">خروج</button></div>';
 
-  h += '<div class="card"><h3>المجموعات</h3><table><tr><th>المجموعة</th><th>الطلاب</th><th>متوسط النجوم</th></tr>';
+  h += '<div class="card"><h3>المجموعات</h3><table><tr><th>المجموعة</th><th>الطلاب</th><th>متوسط النجوم</th><th>أبرز احتياج 🧬</th></tr>';
   G.forEach(g => {
     const st = S.filter(s => s.group_id === g.id);
+    const ids = new Set(st.map(s => s.id));
     const sum = st.reduce((a, s) => a + stat(s.id).st, 0);
-    h += '<tr><td>' + esc(g.name) + '</td><td>' + st.length + '</td><td>' + (st.length ? (sum / st.length).toFixed(1) : '—') + '</td></tr>';
+    const need = topSkill(E.filter(e => ids.has(e.student_id)));
+    h += '<tr><td>' + esc(g.name) + '</td><td>' + st.length + '</td><td>' + (st.length ? (sum / st.length).toFixed(1) : '—') + '</td><td>' + needText(need) + '</td></tr>';
   });
   h += '</table><input id="ng" placeholder="New group name"><button class="g" onclick="addGroup()">➕ إضافة مجموعة</button></div>';
 
-  h += '<div class="card"><h3>الطلاب</h3><table><tr><th>الاسم</th><th>المجموعة</th><th>مهمات</th><th>نجوم</th><th>أخطاء</th></tr>';
+  h += '<div class="card"><h3>الطلاب</h3><table><tr><th>الاسم</th><th>المجموعة</th><th>مهمات</th><th>نجوم</th><th>احتياجه 🧬</th></tr>';
   S.forEach(s => {
     const t = stat(s.id);
-    h += '<tr><td>' + esc(s.name) + '</td><td>' + esc(gname(s.group_id)) + '</td><td>' + t.m + '</td><td>' + t.st + '</td><td>' + t.er + '</td></tr>';
+    const need = topSkill(E.filter(e => e.student_id === s.id));
+    h += '<tr><td>' + esc(s.name) + '</td><td>' + esc(gname(s.group_id)) + '</td><td>' + t.m + '</td><td>' + t.st + '</td><td>' + needText(need) + '</td></tr>';
   });
   h += '</table></div>';
+
+  h += '<div class="card"><h3>آخر الأخطاء</h3>';
+  if(!E.length) h += '<p>لا توجد أخطاء مسجّلة بعد.</p>';
+  else {
+    h += '<table><tr><th>الطالب</th><th>المهارة</th><th>إجابته</th></tr>';
+    E.slice(0, 10).forEach(e => {
+      h += '<tr><td>' + esc(sname(e.student_id)) + '</td><td>' + esc(shortSkill(e.skill)) + '</td><td class="ans">' + esc(e.answer || '(فارغ)') + '</td></tr>';
+    });
+    h += '</table>';
+  }
+  h += '</div>';
   app.innerHTML = h;
 }
 
