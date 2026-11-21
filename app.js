@@ -186,6 +186,7 @@ function check(){
     const dna = load('dna') || [];
     dna.push({mission: M.id, step: i, answer: a, time: Date.now()});
     save('dna', dna);
+    if(load('sid')) sb('mistakes', 'POST', {student_id: load('sid'), mission_id: M.id, step: i, skill: skillOf(s), answer: a.slice(0, 200)});
     fb.textContent = '❌ قريب! جرّب مرة أخرى. تلميح: ' + s.ar;
     speak('Try again.');
   }
