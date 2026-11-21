@@ -1,0 +1,52 @@
+[
+  {"id": 21, "title": "Directions Decoder", "agent": "Agent Nora", "voice": "female", "skill": "الاتجاهات وأماكن الأشياء", "steps": [
+    {"say": "A tourist asks: How do I get to the museum? Tell him to go straight.", "ar": "قل: Go straight", "any": ["straight"]},
+    {"say": "Now tell him to turn left at the traffic light.", "ar": "قل: Turn left at the traffic light", "all": ["turn"], "any": ["left", "right"]},
+    {"say": "Say that the museum is next to the bank.", "ar": "قل: The museum is next to the bank", "any": ["next to", "near", "opposite", "behind", "in front of"]}
+  ]},
+  {"id": 22, "title": "Pharmacy Pass", "agent": "Agent Sam", "voice": "male", "skill": "الصحة والأعراض", "steps": [
+    {"say": "Welcome to the pharmacy. What do you need?", "ar": "قل: I need medicine for a cold", "any": ["i need", "i have", "i would like", "i want"]},
+    {"say": "How do you feel today?", "ar": "قل: I feel tired", "any": ["i feel", "i am", "i have"]},
+    {"say": "Take this medicine every day. Ask how many times a day.", "ar": "اسأل: How many times a day?", "all": ["times"], "any": ["how many", "how often"]}
+  ]},
+  {"id": 23, "title": "Tech Support", "agent": "Agent Nora", "voice": "female", "skill": "الاستعارة والطلب بلطف (Can I borrow?)", "steps": [
+    {"say": "Agent, your phone battery is dead. Ask to borrow a charger.", "ar": "قل: Can I borrow a charger?", "all": ["charger"], "any": ["can i", "could i", "may i"]},
+    {"say": "Sure. Now ask for the Wi-Fi password.", "ar": "اسأل: What is the Wi-Fi password?", "all": ["password"]},
+    {"say": "Here it is. Say thank you very much.", "ar": "قل: Thank you very much", "any": ["thank you very much", "thanks a lot", "thank you so much", "thanks so much"]}
+  ]},
+  {"id": 24, "title": "Job Interview", "agent": "Agent Sam", "voice": "male", "skill": "المقابلات والحديث عن القدرات (I can / good at)", "steps": [
+    {"say": "Welcome to the interview. Please tell me about yourself.", "ar": "قل: I am a student", "any": ["i am", "my name is"]},
+    {"say": "What are you good at?", "ar": "قل: I am good at English", "any": ["good at", "i can"]},
+    {"say": "Why do you want this job?", "ar": "قل: Because I want to learn", "any": ["because", "i want", "i would like", "i love"]}
+  ]},
+  {"id": 25, "title": "Lost Luggage", "agent": "Agent Nora", "voice": "female", "skill": "حل المشكلات والوصف", "steps": [
+    {"say": "Welcome to the information desk. What is the problem?", "ar": "قل: I lost my bag", "any": ["lost", "missing", "cannot find", "can't find"]},
+    {"say": "What does your bag look like?", "ar": "قل: It is big and black", "any": ["big", "small", "large", "black", "blue", "red", "green", "brown"]},
+    {"say": "Where did you last see it?", "ar": "قل: I saw it at the gate", "any": ["saw", "left it", "had it", "last saw"]}
+  ]},
+  {"id": 26, "title": "Compare the Clues", "agent": "Agent Sam", "voice": "male", "skill": "المقارنة (bigger / the best)", "steps": [
+    {"say": "Which is bigger, an elephant or a cat?", "ar": "قل: An elephant is bigger than a cat", "all": ["elephant"], "any": ["bigger", "larger"]},
+    {"say": "Which is faster, a car or a bike?", "ar": "قل: A car is faster than a bike", "all": ["faster"]},
+    {"say": "Tell me your opinion. Which season is the best?", "ar": "قل: Summer is the best season", "any": ["the best", "the most", "the biggest", "the fastest", "the tallest", "the cheapest"]}
+  ]},
+  {"id": 27, "title": "Invitation Code", "agent": "Agent Nora", "voice": "female", "skill": "الدعوات والاقتراحات (Let's / Would you like to)", "steps": [
+    {"say": "I am having a party on Friday. Would you like to come?", "ar": "قل: I would love to come", "any": ["i would love", "i would like to come", "i can come", "i will come", "yes"]},
+    {"say": "Great! Ask me what time the party starts.", "ar": "اسأل: What time does it start?", "all": ["what time"]},
+    {"say": "Now suggest playing a game together.", "ar": "قل: Let's play a game", "any": ["let's", "let us", "why don't we", "shall we", "how about"]}
+  ]},
+  {"id": 28, "title": "Restaurant Complaint", "agent": "Agent Sam", "voice": "male", "skill": "الشكاوى والاعتذار بلطف", "steps": [
+    {"say": "Is everything okay with your food?", "ar": "قل: Excuse me, my soup is cold", "any": ["excuse me", "cold", "wrong", "problem", "not hot"]},
+    {"say": "I am sorry! Would you like something else?", "ar": "قل: Could I have a pizza, please?", "any": ["could i", "can i", "i would like", "i want"]},
+    {"say": "It will take ten minutes. Is that okay?", "ar": "قل: That is fine, thank you", "any": ["fine", "okay", "ok", "no problem", "thank"]}
+  ]},
+  {"id": 29, "title": "Have You Ever", "agent": "Agent Nora", "voice": "female", "skill": "المضارع التام (Have you ever...?)", "steps": [
+    {"say": "Have you ever visited another country?", "ar": "قل: Yes, I have / No, I have not", "any": ["i have", "i haven't", "i have not", "never"]},
+    {"say": "What is the most interesting place you have visited?", "ar": "قل: I have visited Istanbul", "any": ["visited", "went", "been"]},
+    {"say": "Now ask me if I have ever been to London.", "ar": "اسأل: Have you ever been to London?", "all": ["have you ever"]}
+  ]},
+  {"id": 30, "title": "The Grand Finale", "agent": "Agent Sam", "voice": "male", "skill": "مراجعة شاملة (التعريف + الماضي + الطلب بأدب)", "steps": [
+    {"say": "Final test, agent. Tell me your name and where you are from.", "ar": "قل: My name is ... I am from ...", "all": ["from"], "any": ["my name is", "i am"]},
+    {"say": "Tell me what you did last weekend.", "ar": "قل: I went to the market", "any": ["i went", "i played", "i visited", "i studied", "i watched", "i stayed", "i met", "i ate", "i did", "i worked"]},
+    {"say": "Last question. Ask me politely to open the door.", "ar": "قل: Could you open the door, please?", "all": ["open"], "any": ["could you", "can you", "would you", "please"]}
+  ]}
+]
