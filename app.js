@@ -1,4 +1,5 @@
 if (location.search.includes('reset=1')) { localStorage.clear(); location.replace(location.pathname); }
+const DEV = location.search.includes('dev=1');
 const CENTER = 'Lingo Ops Academy';
 const SB_URL = 'https://cvbztwlbulrqwphmhakn.supabase.co';
 const SB_KEY = 'sb_publishable_qyDfWomase0XdKMBsfdtXQ_jjKu9Ymc';
@@ -33,9 +34,14 @@ function speak(t){
   u.pitch = (M && M.voice === 'female') ? 1.4 : 0.8;
   speechSynthesis.speak(u);
 }
-function norm(t){ return t.toLowerCase().replace(/[^a-z' ]/g,''); }
+function norm(t){
+  return t.toLowerCase().replace(/[’‘]/g, "'")
+    .replace(/\bi'd\b/g, 'i would').replace(/\bi'll\b/g, 'i will').replace(/\bi'm\b/g, 'i am')
+    .replace(/[^a-z' ]/g, '');
+}
 
 function skillOf(s){
+  if(s.skill) return s.skill;
   const w = [].concat(s.all || [], s.any || []).join(' ');
   if(/where|how much|do you have/.test(w)) return 'طرح الأسئلة (Where / How much / Do you have)';
   if(/my name|i am|i'm/.test(w)) return 'التعريف بالنفس (I am / My name is)';
@@ -47,9 +53,10 @@ function skillOf(s){
 
 function totalStars(){ return Object.values(passport).reduce((a,b)=>a+b,0); }
 function rankOf(n){
-  if(n >= 13) return '🕶️ Master Spy';
-  if(n >= 9) return '⭐ Senior Agent';
-  if(n >= 4) return '🕵️ Agent';
+  const p = n / Math.max(MS.length * 3, 1);
+  if(p >= 0.75) return '🕶️ Master Spy';
+  if(p >= 0.4) return '⭐ Senior Agent';
+  if(p >= 0.15) return '🕵️ Agent';
   return '🎒 Recruit';
 }
 function allDone(){ return MS.length > 0 && MS.every(m => passport[m.id] !== undefined); }
@@ -79,7 +86,7 @@ function home(){
     '<button class="g" onclick="passportScreen()">🛂 جواز السفر</button>' +
     '<button class="o" onclick="dnaScreen()">🧬 Language DNA (' + errs + ')</button></div><div class="card"><h2>اختر مهمتك</h2>';
   MS.forEach((m, idx) => {
-    const open = idx === 0 || passport[MS[idx-1].id] !== undefined;
+    const open = DEV || idx === 0 || passport[MS[idx-1].id] !== undefined;
     const done = passport[m.id];
     h += '<button class="m ' + (open ? '' : 'lock') + '" ' + (open ? 'onclick="begin(' + idx + ')"' : 'disabled') + '>' +
       (open ? (done !== undefined ? '✅ ' : '▶️ ') : '🔒 ') + m.id + '. ' + m.title + (done !== undefined ? ' (' + done + '⭐)' : '') + '</button>';
@@ -206,7 +213,14 @@ function finish(){
 }
 
 (async () => {
-  MS = await fetch('missions.json').then(r => r.json());
+  MS = [];
+  for (const f of ['missions.json', 'missions2.json', 'missions3.json']) {
+    try {
+      const r = await fetch(f);
+      if (r.ok) MS = MS.concat(await r.json());
+    } catch (e) {}
+  }
+  MS.forEach(m => m.steps.forEach(s => { if (!s.skill && m.skill) s.skill = m.skill; }));
   const g = await sb('groups?select=id,name&order=id');
   GROUPS = g || [];
   home();
