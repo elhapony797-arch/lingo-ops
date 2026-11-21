@@ -1,0 +1,52 @@
+[
+  {"id": 11, "title": "The Clock Tower", "agent": "Agent Nora", "voice": "female", "skill": "الوقت والمواعيد", "steps": [
+    {"say": "A code is hidden in the clock tower. Ask me what time it is.", "ar": "اسأل: What time is it?", "any": ["what time", "the time"]},
+    {"say": "It is half past three. Tell me when your class starts.", "ar": "قل: My class starts at nine", "any": ["start", "begin"]},
+    {"say": "The train leaves soon. Tell me you are late.", "ar": "قل: I am late", "all": ["late"]}
+  ]},
+  {"id": 12, "title": "Family Files", "agent": "Agent Sam", "voice": "male", "skill": "الحديث عن العائلة", "steps": [
+    {"say": "Agent, tell me about your family. How many people are in your family?", "ar": "قل: There are five people in my family", "all": ["family"], "any": ["there are", "we are", "i have", "has"]},
+    {"say": "Do you have any brothers or sisters?", "ar": "قل: I have two brothers", "any": ["i have", "i do not", "i don't", "only child"]},
+    {"say": "What does your father do?", "ar": "قل: My father is a teacher", "any": ["my father", "my dad"]}
+  ]},
+  {"id": 13, "title": "School Spy", "agent": "Agent Nora", "voice": "female", "skill": "التعبير عن الآراء والأسباب", "steps": [
+    {"say": "Which school subject do you like best?", "ar": "قل: I like English", "any": ["i like", "i love", "my favorite", "my favourite"]},
+    {"say": "Why do you like it?", "ar": "قل: Because it is fun", "all": ["because"]},
+    {"say": "The lesson is hard. Tell your teacher you do not understand.", "ar": "قل: I do not understand", "any": ["i do not understand", "i don't understand", "can you help", "could you help", "please help", "i do not know", "i don't know"]}
+  ]},
+  {"id": 14, "title": "Weather Report", "agent": "Agent Sam", "voice": "male", "skill": "وصف الطقس والملابس", "steps": [
+    {"say": "What is the weather like today?", "ar": "قل: It is sunny", "any": ["sunny", "rainy", "cloudy", "hot", "cold", "windy", "warm", "raining"]},
+    {"say": "What is your favorite season?", "ar": "قل: My favorite season is summer", "any": ["summer", "winter", "spring", "autumn", "fall"]},
+    {"say": "It is very cold outside. What do you wear?", "ar": "قل: I wear a coat", "any": ["wear", "coat", "jacket", "sweater", "scarf"]}
+  ]},
+  {"id": 15, "title": "Market Mission", "agent": "Agent Nora", "voice": "female", "skill": "التسوق والدفع", "steps": [
+    {"say": "Welcome to the market! What do you want to buy?", "ar": "قل: I would like some apples", "any": ["i would like", "i want", "i need", "can i have", "can i get"]},
+    {"say": "How many kilos do you want?", "ar": "قل: Two kilos, please", "any": ["kilo", "kilos", "one", "two", "three", "four", "five"]},
+    {"say": "That is ten dollars. Ask if you can pay by card.", "ar": "قل: Can I pay by card?", "all": ["card"]}
+  ]},
+  {"id": 16, "title": "Train Station", "agent": "Agent Sam", "voice": "male", "skill": "السفر والمواصلات", "steps": [
+    {"say": "Next in line, please. What can I do for you?", "ar": "قل: One ticket to the city, please", "all": ["ticket"]},
+    {"say": "Single or return?", "ar": "قل: Return, please", "any": ["return", "single", "round trip", "one way"]},
+    {"say": "Here is your ticket. Ask which platform the train leaves from.", "ar": "اسأل: Which platform?", "all": ["platform"]}
+  ]},
+  {"id": 17, "title": "Hobby Hunter", "agent": "Agent Nora", "voice": "female", "skill": "الهوايات والتكرار", "steps": [
+    {"say": "What do you like to do in your free time?", "ar": "قل: I like playing football", "any": ["i like", "i love", "i enjoy"]},
+    {"say": "How often do you do it?", "ar": "قل: Every day / Twice a week", "any": ["every", "once", "twice", "times", "always", "usually", "sometimes", "often"]},
+    {"say": "Now ask me about my hobbies.", "ar": "اسأل: What do you like to do?", "any": ["what do you", "do you like", "what is your hobby", "what are your hobbies", "what's your hobby"]}
+  ]},
+  {"id": 18, "title": "Describe the Suspect", "agent": "Agent Sam", "voice": "male", "skill": "وصف الأشخاص والألوان", "steps": [
+    {"say": "Describe the suspect. Is he tall or short?", "ar": "قل: He is tall", "any": ["tall", "short"]},
+    {"say": "What color is his jacket?", "ar": "قل: His jacket is black", "any": ["black", "white", "red", "blue", "green", "brown", "yellow", "grey", "gray", "orange"]},
+    {"say": "Where did you see him?", "ar": "قل: I saw him near the station", "all": ["saw"]}
+  ]},
+  {"id": 19, "title": "Yesterday's Mission", "agent": "Agent Nora", "voice": "female", "skill": "الماضي البسيط (I went / I played)", "steps": [
+    {"say": "What did you do yesterday?", "ar": "قل: I played football", "any": ["i went", "i played", "i studied", "i watched", "i visited", "i stayed", "i worked", "i ate", "i met", "i did"]},
+    {"say": "Where did you go?", "ar": "قل: I went to the market", "any": ["i went", "went to"]},
+    {"say": "Did you enjoy it?", "ar": "قل: Yes, I did", "any": ["i did", "i didn't", "i did not"]}
+  ]},
+  {"id": 20, "title": "Future Agent", "agent": "Agent Sam", "voice": "male", "skill": "المستقبل (I will / I am going to)", "steps": [
+    {"say": "What will you do tomorrow?", "ar": "قل: I will study English", "any": ["i will", "i am going to", "i'm going to"]},
+    {"say": "Where are you going to travel one day?", "ar": "قل: I am going to visit Turkey", "any": ["i am going to", "i will", "i want to visit", "i would like to visit"]},
+    {"say": "What job do you want in the future?", "ar": "قل: I want to be a teacher", "any": ["i want to be", "i would like to be", "i will be", "i want to become"]}
+  ]}
+]
